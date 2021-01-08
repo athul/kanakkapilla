@@ -7,14 +7,18 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@exampledev/new.css@1.1.2/new.min.css">
 </head>
 <body>
+<h3>Current Bank Balance</h3>
+<ul>
+<li>Balance Amount as on {{.BalonDate}}:<b> {{.CurBal}}</b></li>
+</ul>
     <hr>
     <ul>
-    {{- range . }}
+    {{- range .UPITrans }}
     
     <hr>
     <mark>{{.Date}}</mark>
     
-    {{- if eq .Credit.String " "}}
+    {{- if not .Credit.Valid}}
     <li>{{.Description}}</li>
     <li>{{.Refno.String}}</li>
     <li>Debited: 🙈 {{ .Debit.String}}</li>
