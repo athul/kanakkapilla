@@ -7,11 +7,11 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@exampledev/new.css@1.1.2/new.min.css">
 </head>
 <body>
-<h3>Current Bank Balance</h3>
-<ul>
-<li>Balance Amount as on {{.BalonDate}}:<b> {{.CurBal}}</b></li>
-</ul>
+<h3>Current Bank ,Balance Amount as on {{.BalonDate}}:</h3>
+<h4> {{.CurBal | humanize | currit}}</h4>
     <hr>
+    <h3>Maximum Debited Amount from UPI: {{.UPIPoints.MxDebit | humanize | currit}}</h3>
+    <h3>Maximum Credit Amount from UPI: {{.UPIPoints.MxCredit | humanize | currit}}</h3>
     <ul>
     {{- range .UPITrans }}
     
@@ -21,11 +21,11 @@
     {{- if not .Credit.Valid}}
     <li>{{.Description}}</li>
     <li>{{.Refno.String}}</li>
-    <li>Debited: 🙈 {{ .Debit.String}}</li>
+    <li>Debited: 🙈 {{ .Debit.Float64 | humanize | currit }}</li>
     {{- else}}
     <li>{{.Description}}</li>
     <li>{{.Refno.String}}</li>
-    <li>Credit: 🤑 {{ .Credit.String}}</li>
+    <li>Credit: 🤑 {{ .Credit.Float64 | humanize | currit}}</li>
     {{end -}}
     
     {{- end}}
