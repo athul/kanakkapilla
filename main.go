@@ -1,18 +1,19 @@
 package main
 
 import (
+	"bytes"
 	"database/sql"
 	"fmt"
 	"html/template"
 	"log"
-	"net/http"
 
 	"github.com/athul/kanakkapilla/csv2pg"
 	"github.com/dustin/go-humanize"
+	"github.com/labstack/echo/v4"
 	_ "github.com/lib/pq"
 )
 
-// DB Schema of Sqlite is
+// DB Schema of Postgres is
 // CREATE TABLE bank(id INTEGER PRIMARY KEY AUTOINCREMENT,tdate TEXT,
 // date TEXT,desc TEXT,ref TEXT,debit FLOAT,credit FLOAT,bal FLOAT);
 
@@ -33,13 +34,15 @@ type AllData struct {
 	// Save all the Transcations from the account
 	AllTrans []Transaction
 	// Saves all the UPI transactions from the account
-	UPITrans  []Transaction
-	upiNos    int
-	upiDebAm  float64
+	UPITrans []Transaction
+	upiNos   int
+	upiDebAm float64
+	//CurBal is the Current Balance
 	CurBal    float64
 	BalonDate string
 	//UPIPoints hold the Max and Min of UPI transactions,debit and credit
 	UPIPoints MinMax
+	UPISum    Sums
 }
 
 //MinMax holds the Max and Mins of Debits and Credits
@@ -48,6 +51,12 @@ type MinMax struct {
 	MxDebit  float64 `db:"debmax"`
 	MnCredit float64 `db:"credmin"`
 	MnDebit  float64 `db:"debmin"`
+}
+
+// Sums holds the sum of Debited and Credit Amounts
+type Sums struct {
+	DebSum  float64 `db:"debsum"`
+	CredSum float64 `db:"credsum"`
 }
 
 var (
@@ -63,19 +72,20 @@ func main() {
 		log.Println(err)
 	}
 
-	sumDebitsfromUPI()
-	upiTrans := getUPI()
 	all := AllData{
 		AllTrans:  trans,
 		CurBal:    trans[len(trans)-1].Balance,
 		BalonDate: trans[len(trans)-1].Date,
-		UPITrans:  upiTrans,
+		UPITrans:  getUPI(),
 	}
 	all.getMinMaxupi()
-	http.HandleFunc("/", all.renderTemplate)
-	http.ListenAndServe(":8080", nil)
+	all.sumfromUPI()
+	e := echo.New()
+	e.GET("/", all.renderTemplate)
+	e.Start(":8080")
 }
-func (a *AllData) renderTemplate(h http.ResponseWriter, r *http.Request) {
+func (a *AllData) renderTemplate(c echo.Context) error {
+	var b bytes.Buffer
 	funcMap := template.FuncMap{
 		"humanize": func(fl float64) string {
 			return humanize.Commaf(fl)
@@ -84,15 +94,15 @@ func (a *AllData) renderTemplate(h http.ResponseWriter, r *http.Request) {
 			return fmt.Sprintf("₹ %s", as)
 		},
 	}
-	temp, err := template.New("index.html").Funcs(funcMap).ParseFiles("index.html")
+	temp, err := template.New("index.html").Funcs(funcMap).ParseFiles("templates/index.html")
 	if err != nil {
 		log.Println(err)
 	}
 	// tr := getUPI()
-	if err := temp.Execute(h, &a); err != nil {
+	if err := temp.Execute(&b, &a); err != nil {
 		log.Println(err)
 	}
-
+	return c.HTML(200, b.String())
 }
 func getUPI() []Transaction {
 	upiTrans := []Transaction{}
@@ -102,12 +112,13 @@ func getUPI() []Transaction {
 	return upiTrans
 }
 
-func sumDebitsfromUPI() {
-	var sum []float64
-	if err = db.Select(&sum, `SELECT SUM(debit) FROM bank WHERE description LIKE '%-UPI%'`); err != nil {
+func (a *AllData) sumfromUPI() {
+	var sum []Sums
+	if err = db.Select(&sum, `SELECT SUM(debit) as debsum, SUM(credit) as credsum FROM bank WHERE description LIKE '%-UPI%'`); err != nil {
 		log.Println("Unable to fetch UP Sum", err)
 	}
-	log.Println("Total Debited Amount", sum[0])
+	a.UPISum = sum[0]
+	log.Println(sum)
 }
 
 func (a *AllData) getMinMaxupi() {

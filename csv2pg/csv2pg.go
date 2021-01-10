@@ -15,6 +15,15 @@ var (
 	err error
 )
 
+// CSV Data will be of the form
+// +----+------------+------------+-----------------------------+-----------------------+--------+--------+---------+
+// | id | tdate      | date       | desc                        | ref                   | debit  | credit | bal     |
+// +----+------------+------------+-----------------------------+-----------------------+--------+--------+---------+
+// | 1  | 1 Feb 2020 | 1 Feb 2020 | TO TRANSFER TO SOMEONE      | TRANSFER TO 123456789 | 100.00 |        | 6237.15 |
+// +----+------------+------------+-----------------------------+-----------------------+--------+--------+---------+
+// | 2  | 8 Feb 2020 | 8 Feb 2020 | TO TRANSFER TO SOMEONE ELSE | TRANSFER TO 123456789 |        | 100.00 | 6337.15 |
+// +----+------------+------------+-----------------------------+-----------------------+--------+--------+---------+
+
 // Transaction holds the structure of the csv and db
 type Transaction struct {
 	ID          int    `db:"id" csv:"id"`
@@ -39,7 +48,7 @@ func InitDB() *sqlx.DB {
 	// credit NUMERIC DEFAULT NULL,
 	// bal NUMERIC
 	// );`
-	DB, err = sqlx.Connect("postgres", "")
+	DB, err = sqlx.Connect("postgres", "postgres://bpnaiizb:q1OnvRz6MwNl2ktxN8m7zWX1XJ_1aL0s@john.db.elephantsql.com:5432/bpnaiizb")
 	if err != nil {
 		log.Println(err)
 	}
