@@ -48,7 +48,7 @@ func InitDB() *sqlx.DB {
 	// credit NUMERIC DEFAULT NULL,
 	// bal NUMERIC
 	// );`
-	DB, err = sqlx.Connect("postgres", "postgres://bpnaiizb:q1OnvRz6MwNl2ktxN8m7zWX1XJ_1aL0s@john.db.elephantsql.com:5432/bpnaiizb")
+	DB, err = sqlx.Connect("postgres", os.Getenv("pgurl"))
 	if err != nil {
 		log.Println(err)
 	}

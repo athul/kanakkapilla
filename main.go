@@ -1,14 +1,10 @@
 package main
 
 import (
-	"bytes"
 	"database/sql"
-	"fmt"
-	"html/template"
 	"log"
 
 	"github.com/athul/kanakkapilla/csv2pg"
-	"github.com/dustin/go-humanize"
 	"github.com/labstack/echo/v4"
 	_ "github.com/lib/pq"
 )
@@ -81,29 +77,12 @@ func main() {
 	all.getMinMaxupi()
 	all.sumfromUPI()
 	e := echo.New()
-	e.GET("/", all.renderTemplate)
+	e.GET("/", all.renderIndexTemplate)
+	e.GET("/all", all.renderTableTemplate)
+	e.GET("/all.graph", all.genChart)
 	e.Start(":8080")
 }
-func (a *AllData) renderTemplate(c echo.Context) error {
-	var b bytes.Buffer
-	funcMap := template.FuncMap{
-		"humanize": func(fl float64) string {
-			return humanize.Commaf(fl)
-		},
-		"currit": func(as string) string {
-			return fmt.Sprintf("₹ %s", as)
-		},
-	}
-	temp, err := template.New("index.html").Funcs(funcMap).ParseFiles("templates/index.html")
-	if err != nil {
-		log.Println(err)
-	}
-	// tr := getUPI()
-	if err := temp.Execute(&b, &a); err != nil {
-		log.Println(err)
-	}
-	return c.HTML(200, b.String())
-}
+
 func getUPI() []Transaction {
 	upiTrans := []Transaction{}
 	if err = db.Select(&upiTrans, `SELECT * FROM bank WHERE description LIKE '%-UPI%' ORDER BY id DESC`); err != nil {

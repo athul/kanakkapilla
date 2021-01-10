@@ -3,10 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>UPI Transactions</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@exampledev/new.css@1.1.2/new.min.css">
 </head>
 <body>
+    <nav>
+        <a href="/all">All Transactions</a>
+    </nav>
 <h3>Current Bank ,Balance Amount as on {{.BalonDate}}: <mark>{{.CurBal | humanize | currit}}</mark></h3>
     <hr>
     <h3>Maximum Debited Amount from UPI: {{.UPIPoints.MxDebit | humanize | currit}}</h3>
@@ -16,35 +19,8 @@
     <h4>Total Debited Amount:{{.UPISum.DebSum| humanize | currit}}</h4>
     <h4>Total Credited Amount: {{.UPISum.CredSum| humanize | currit}}</h4>
     <ol>
-    <h2>All Transcations</h2>
-    <table>
-    <tr>
-        <th>ID</th>
-        <th>TDate</th>
-        <th>Date</th>
-        <th>Description</th>
-        <th>Ref</th>
-        <th>Debit</th>
-        <th>Credit</th>
-        <th>Balance</th>
-    </tr>
-    {{ range .AllTrans}}
-        <tr>
-            <td>{{ .ID }}</td>
-            <td>{{ .Tdate }}</td>
-            <td>{{ .Date }}</td>
-            <td>{{ .Description }}</td>
-            <td>{{ .Refno.String }}</td>
-            <td>{{ .Debit.Float64| humanize | currit }}</td>
-            <td>{{ .Credit.Float64| humanize | currit }}</td>
-            <td>{{ .Balance| humanize | currit }}</td>
-        </tr>
-    {{ end}}
-</table>
     <hr>
     {{- range .UPITrans }}
-    
-    <hr>
     <li><mark>{{.Date}}</mark></li>
     <ul>
     {{- if not .Credit.Valid}}
@@ -61,9 +37,4 @@
     {{- end}}
     </ol>
 </body>
-<style>
-body{
-    max-width:max-content; !important
-    }
-</style>
 </html>
