@@ -9,6 +9,10 @@
 <body>
     <nav>
         <a href="/all">All Transactions</a>
+        <form action="/search" method="POST">
+            Type What you want to search for: <input type="text" name="query">
+            <input type="submit"/>
+            </form>
     </nav>
 <h3>Current Bank ,Balance Amount as on {{.BalonDate}}: <mark>{{.CurBal | humanize | currit}}</mark></h3>
     <hr>
