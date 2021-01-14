@@ -10,11 +10,15 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func (a *AllData) genAllGraphOptions(deb bool) []opts.BarData {
+func (a *AllData) genAllGraphOptions(deb, bal bool) []opts.BarData {
 	items := make([]opts.BarData, 0)
 	if deb {
 		for _, dt := range a.AllTrans {
 			items = append(items, opts.BarData{Value: dt.Debit.Float64})
+		}
+	} else if bal {
+		for _, dt := range a.AllTrans {
+			items = append(items, opts.BarData{Value: dt.Balance})
 		}
 	} else {
 		for _, dt := range a.AllTrans {
@@ -28,7 +32,7 @@ func (a *AllData) genChart(c echo.Context) error {
 	line := charts.NewBar()
 	// set some global options like Title/Legend/ToolTip or anything else
 	line.SetGlobalOptions(
-		charts.WithInitializationOpts(opts.Initialization{Theme: types.ThemeInfographic, Width: "1300px"}),
+		charts.WithInitializationOpts(opts.Initialization{Theme: types.ChartThemeRiver, Width: "1300px"}),
 		charts.WithTitleOpts(opts.Title{
 			Title:    fmt.Sprintf("Till %s", a.BalonDate),
 			Subtitle: "All Transactions",
@@ -42,8 +46,9 @@ func (a *AllData) genChart(c echo.Context) error {
 	}
 	// Put data into instance
 	line.SetXAxis(dates).
-		AddSeries("Debit", a.genAllGraphOptions(true)).
-		AddSeries("Credit", a.genAllGraphOptions(false)).
+		AddSeries("Debit", a.genAllGraphOptions(true, false)).
+		AddSeries("Credit", a.genAllGraphOptions(false, false)).
+		AddSeries("Balance", a.genAllGraphOptions(false, true)).
 		SetSeriesOptions(charts.WithMarkPointNameTypeItemOpts(
 			opts.MarkPointNameTypeItem{Name: "Maximum", Type: "max"},
 			opts.MarkPointNameTypeItem{Name: "Average", Type: "average"},

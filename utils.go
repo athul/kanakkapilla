@@ -1,11 +1,7 @@
 package main
 
 import (
-	"bytes"
-	"fmt"
-	"html/template"
 	"log"
-	"strings"
 
 	"github.com/labstack/echo/v4"
 )
@@ -35,66 +31,8 @@ func (a *AllData) getMinMaxupi() {
 	a.UPIPoints = minmax[0]
 
 }
-func (a *AllData) renderSearch(e echo.Context) error {
-	descName := e.FormValue("query")
-	trs := []Transaction{}
-	var (
-		b bytes.Buffer
-	)
-	query := fmt.Sprintf(`SELECT * FROM bank WHERE description LIKE %s OR description LIKE %s ORDER BY id DESC`, "'%"+strings.ToUpper(descName)+"%'", "'%"+descName+"%'")
-	log.Println("Query", query)
-	err := db.Select(&trs, query)
-	if err != nil {
-		log.Println("Get Error", err)
-	}
-	log.Println(trs)
-	// for rows.Next() {
-	// 	err := rows.Scan(&trs)
-	// 	eros(err)
-
-	// }
-	temp, err := template.New("table").Funcs(funcMap).Parse(`
-	<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Find Transaction</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@exampledev/new.css@1.1.2/new.min.css">
-</head>
-<body>
-    <table>
-        <tr>
-            <th>ID</th>
-            <th>TDate</th>
-            <th>Date</th>
-            <th>Description</th>
-            <th>Ref</th>
-            <th>Debit</th>
-            <th>Credit</th>
-            <th>Balance</th>
-        </tr>
-        {{ range .}}
-            <tr>
-                <td>{{ .ID }}</td>
-                <td>{{ .Tdate }}</td>
-                <td>{{ .Date }}</td>
-                <td>{{ .Description }}</td>
-                <td>{{ .Refno.String }}</td>
-                <td>{{ .Debit.Float64| humanize | currit }}</td>
-                <td>{{ .Credit.Float64| humanize | currit }}</td>
-                <td>{{ .Balance| humanize | currit }}</td>
-            </tr>
-        {{ end}}
-    </table>
-</body>
-<style>
-body{
-	max-width:max-content !important;
-	}
-</style>
-</html>`)
-	eros(err)
-	temp.Execute(&b, trs)
-	return e.HTML(200, b.String())
+func newTransaction(c echo.Context) error {
+	ll := c.FormValue("date")
+	log.Println(ll)
+	return c.String(200, "Date is "+ll)
 }

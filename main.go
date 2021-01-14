@@ -22,9 +22,8 @@ func main() {
 	db = csv2pg.InitDB()
 	trans := []Transaction{}
 
-	if err = db.Select(&trans, `SELECT * FROM bank ORDER BY id ASC`); err != nil {
-		log.Println(err)
-	}
+	err = db.Select(&trans, `SELECT * FROM bank ORDER BY id ASC`)
+	eros(err)
 
 	all := AllData{
 		AllTrans:  trans,
@@ -38,6 +37,8 @@ func main() {
 	e.GET("/", all.renderIndexTemplate)
 	e.GET("/all", all.renderTableTemplate)
 	e.GET("/all.graph", all.genChart)
+	e.File("/new", "templates/insert.html")
 	e.POST("/search", all.renderSearch)
+	e.POST("/ins", newTransaction)
 	e.Start(":8080")
 }

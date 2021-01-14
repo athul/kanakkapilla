@@ -14,7 +14,7 @@
             <input type="submit"/>
             </form>
     </nav>
-<h3>Current Bank ,Balance Amount as on {{.BalonDate}}: <mark>{{.CurBal | humanize | currit}}</mark></h3>
+<h3>Current Bank ,Balance Amount as on {{.BalonDate | hdate}}: <mark>{{.CurBal | humanize | currit}}</mark></h3>
     <hr>
     <h3>Maximum Debited Amount from UPI: {{.UPIPoints.MxDebit | humanize | currit}}</h3>
     <h3>Maximum Credit Amount from UPI: {{.UPIPoints.MxCredit | humanize | currit}}</h3>
@@ -25,7 +25,7 @@
     <ol>
     <hr>
     {{- range .UPITrans }}
-    <li><mark>{{.Date}}</mark></li>
+    <li><mark>{{.Date|hdate}}</mark></li>
     <ul>
     {{- if not .Credit.Valid}}
     <li>{{.Description}}</li>
