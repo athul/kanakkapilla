@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,13 +8,30 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@exampledev/new.css@1.1.2/new.min.css">
 
 </head>
+
 <body>
     <nav>
         <a href="/">Home</a>
     </nav>
     <form action="/ins" method="post">
-    <input type="date" name="date" id="ip-date">
-    <input type="submit" value="Submit">
+        <label for="date">Transaction Date: </label>
+        <input type="date" name="date" id="date-ins">
+        <br/>
+        <label for="description">Description: </label>
+        <textarea name="description" id="desc-ins" cols="30" rows="10"></textarea>
+        <br/>
+        <label for="reference">Transaction Reference: </label>
+        <input type="text" name="reference" id="ref-ins">
+        <br/>
+        <label for="debit">Debited Amount: </label>
+        <input type="text" name="debit" id="debit-ins">
+        <br/>
+        <label for="credit">Credited Amount: </label>
+        <input type="text" name="credit" id="credit-ins">
+        <br/>
+        
+        <input type="submit" value="Submit">
     </form>
 </body>
+
 </html>

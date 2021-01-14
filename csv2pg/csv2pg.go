@@ -40,8 +40,8 @@ type Transaction struct {
 func InitDB() *sqlx.DB {
 	// var tableSchema = `DROP TABLE bank;CREATE TABLE IF NOT EXISTS bank(
 	// id SERIAL PRIMARY KEY,
-	// tdate TEXT,
-	// date TEXT,
+	// tdate DATE,
+	// date DATE,
 	// description TEXT,
 	// ref TEXT DEFAULT NULL,
 	// debit NUMERIC DEFAULT NULL,

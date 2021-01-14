@@ -22,13 +22,13 @@ func main() {
 	db = csv2pg.InitDB()
 	trans := []Transaction{}
 
-	err = db.Select(&trans, `SELECT * FROM bank ORDER BY id ASC`)
+	err = db.Select(&trans, `SELECT * FROM bank ORDER BY id DESC`)
 	eros(err)
 
 	all := AllData{
 		AllTrans:  trans,
-		CurBal:    trans[len(trans)-1].Balance,
-		BalonDate: trans[len(trans)-1].Date,
+		CurBal:    trans[0].Balance,
+		BalonDate: trans[0].Date,
 		UPITrans:  getUPI(),
 	}
 	all.getMinMaxupi()
@@ -39,6 +39,6 @@ func main() {
 	e.GET("/all.graph", all.genChart)
 	e.File("/new", "templates/insert.html")
 	e.POST("/search", all.renderSearch)
-	e.POST("/ins", newTransaction)
+	e.POST("/ins", all.newTransaction)
 	e.Start(":8080")
 }

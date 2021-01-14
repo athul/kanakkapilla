@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 )
@@ -31,8 +32,29 @@ func (a *AllData) getMinMaxupi() {
 	a.UPIPoints = minmax[0]
 
 }
-func newTransaction(c echo.Context) error {
-	ll := c.FormValue("date")
-	log.Println(ll)
-	return c.String(200, "Date is "+ll)
+func (a *AllData) newTransaction(c echo.Context) error {
+	var nildeb, nilcred interface{}
+	date := c.FormValue("date")
+	desc := c.FormValue("description")
+	ref := c.FormValue("reference")
+	debit := c.FormValue("debit")
+	credit := c.FormValue("credit")
+	if credit == "" {
+		nilcred = nil
+	} else {
+		nilcred, err = strconv.ParseFloat(credit, 64)
+		eros(err)
+		newflt := a.CurBal + nilcred.(float64)
+		log.Println("New Balance", newflt, "Old Balance", a.CurBal)
+	}
+	if debit == "" {
+		nildeb = nil
+	} else {
+		nildeb, err = strconv.ParseFloat(debit, 64)
+		eros(err)
+		newflt := a.CurBal - nildeb.(float64)
+		log.Println("New Balance", newflt, "Old Balance", a.CurBal)
+	}
+	log.Println(nildeb, nilcred)
+	return c.String(200, "Date is "+date+"\n"+desc+"\n"+ref+"\n"+debit+"\n"+credit)
 }
