@@ -20,17 +20,8 @@ func eros(err error) {
 }
 func main() {
 	db = csv2pg.InitDB()
-	trans := []Transaction{}
-
-	err = db.Select(&trans, `SELECT * FROM bank ORDER BY id DESC`)
-	eros(err)
-
-	all := AllData{
-		AllTrans:  trans,
-		CurBal:    trans[0].Balance,
-		BalonDate: trans[0].Date,
-		UPITrans:  getUPI(),
-	}
+	all := AllData{}
+	all.fetchAlltrs()
 	all.getMinMaxupi()
 	all.sumfromUPI()
 	e := echo.New()
@@ -41,4 +32,14 @@ func main() {
 	e.POST("/search", all.renderSearch)
 	e.POST("/ins", all.newTransaction)
 	e.Start(":8080")
+}
+
+func (a *AllData) fetchAlltrs() {
+	trans := []Transaction{}
+	err = db.Select(&trans, `SELECT * FROM bank ORDER BY id DESC`)
+	eros(err)
+	a.AllTrans = trans
+	a.CurBal = trans[0].Balance
+	a.BalonDate = trans[0].Date
+	a.UPITrans = getUPI()
 }

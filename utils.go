@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"strconv"
 
@@ -33,7 +34,10 @@ func (a *AllData) getMinMaxupi() {
 
 }
 func (a *AllData) newTransaction(c echo.Context) error {
-	var nildeb, nilcred interface{}
+	var (
+		nildeb, nilcred interface{}
+		newflt          float64
+	)
 	date := c.FormValue("date")
 	desc := c.FormValue("description")
 	ref := c.FormValue("reference")
@@ -44,7 +48,7 @@ func (a *AllData) newTransaction(c echo.Context) error {
 	} else {
 		nilcred, err = strconv.ParseFloat(credit, 64)
 		eros(err)
-		newflt := a.CurBal + nilcred.(float64)
+		newflt = a.CurBal + nilcred.(float64)
 		log.Println("New Balance", newflt, "Old Balance", a.CurBal)
 	}
 	if debit == "" {
@@ -52,9 +56,11 @@ func (a *AllData) newTransaction(c echo.Context) error {
 	} else {
 		nildeb, err = strconv.ParseFloat(debit, 64)
 		eros(err)
-		newflt := a.CurBal - nildeb.(float64)
+		newflt = a.CurBal - nildeb.(float64)
 		log.Println("New Balance", newflt, "Old Balance", a.CurBal)
 	}
-	log.Println(nildeb, nilcred)
-	return c.String(200, "Date is "+date+"\n"+desc+"\n"+ref+"\n"+debit+"\n"+credit)
+	insStmt := `INSERT INTO bank VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`
+	res := db.MustExec(insStmt, len(a.AllTrans)+1, date, date, desc, ref, nildeb, nilcred, fmt.Sprintf("%.2f", newflt))
+	log.Println(res.RowsAffected())
+	return c.String(200, "Date is "+date+"\n"+desc+"\n"+ref+"\n"+debit+"\n"+credit+"\n"+fmt.Sprintf("%.2f", newflt))
 }
