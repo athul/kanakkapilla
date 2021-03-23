@@ -40,10 +40,7 @@ func (a *AllData) genChart(c echo.Context) error {
 		charts.WithLegendOpts(opts.Legend{
 			Show: true,
 		}))
-	var dates []string
-	for _, dt := range a.AllTrans {
-		dates = append(dates, dt.Date)
-	}
+	dates := a.GetDates()
 	// Put data into instance
 	line.SetXAxis(dates).
 		AddSeries("Debit", a.genAllGraphOptions(true, false)).

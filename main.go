@@ -28,10 +28,12 @@ func main() {
 	e.GET("/", all.renderIndexTemplate)
 	e.GET("/all", all.renderTableTemplate)
 	e.GET("/all.graph", all.genChart)
+	e.GET("/upi", all.renderUPITemplate)
 	e.File("/new", "templates/insert.html")
 	e.POST("/search", all.renderSearch)
 	e.POST("/ins", all.newTransaction)
 	e.Start(":8080")
+
 }
 
 func (a *AllData) fetchAlltrs() {

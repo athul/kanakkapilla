@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"strconv"
+	"time"
 
 	"github.com/labstack/echo/v4"
 )
@@ -63,4 +64,31 @@ func (a *AllData) newTransaction(c echo.Context) error {
 	res := db.MustExec(insStmt, len(a.AllTrans)+1, date, date, desc, ref, nildeb, nilcred, fmt.Sprintf("%.2f", newflt))
 	log.Println(res.RowsAffected())
 	return c.String(200, "Date is "+date+"\n"+desc+"\n"+ref+"\n"+debit+"\n"+credit+"\n"+fmt.Sprintf("%.2f", newflt))
+}
+
+//GetTrsArr returns a slice of the debit/credit transactions
+func (a *AllData) GetTrsArr(mode string) []float64 {
+	trs := make([]float64, 0)
+	switch mode {
+	case "deb":
+		for _, dt := range a.AllTrans {
+			trs = append(trs, dt.Debit.Float64)
+		}
+	case "cred":
+		for _, dt := range a.AllTrans {
+			trs = append(trs, dt.Credit.Float64)
+		}
+	}
+	return trs[:10]
+}
+
+func (a *AllData) GetDates() []string {
+	var dates []string
+	for _, dt := range a.AllTrans {
+		t, err := time.Parse(time.RFC3339, dt.Date)
+		eros(err)
+		dates = append(dates, t.Format("Jan 2, 2006"))
+	}
+
+	return dates[:10]
 }

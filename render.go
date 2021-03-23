@@ -39,6 +39,19 @@ func (a *AllData) renderIndexTemplate(c echo.Context) error {
 	}
 	return c.HTML(200, b.String())
 }
+func (a *AllData) renderUPITemplate(c echo.Context) error {
+	var b bytes.Buffer
+
+	temp, err := template.New("upi.html").Funcs(funcMap).ParseGlob("templates/upi.html")
+	if err != nil {
+		log.Println(err)
+	}
+	// tr := getUPI()
+	if err := temp.Execute(&b, &a); err != nil {
+		log.Println(err)
+	}
+	return c.HTML(200, b.String())
+}
 func (a *AllData) renderTableTemplate(c echo.Context) error {
 	var b bytes.Buffer
 

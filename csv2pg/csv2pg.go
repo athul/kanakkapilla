@@ -48,14 +48,15 @@ func InitDB() *sqlx.DB {
 	// credit NUMERIC DEFAULT NULL,
 	// bal NUMERIC
 	// );`
-	DB, err = sqlx.Connect("postgres", os.Getenv("pgurl"))
+	// var pgURL = "postgres://athul:splendor@localhost?ssl=false"
+	DB, err = sqlx.Connect("postgres", "user=athul password=splendor sslmode=disable") //os.Getenv("pgurl"))
 	if err != nil {
 		log.Println(err)
 	}
 	if err = DB.Ping(); err != nil {
 		log.Println("Ping Error", err)
 	}
-	// result, err := db.Exec(tableSchema)
+	// result, err := DB.Exec(tableSchema)
 	// if err != nil {
 	// 	log.Println("Table Creation Error", err)
 	// }
