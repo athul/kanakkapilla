@@ -92,3 +92,52 @@ func (a *AllData) GetDates() []string {
 
 	return dates[:10]
 }
+
+func (am *Amenities) Calcfuel() {
+	var fuel float64
+	if err := db.Select(&fuel, `SELECT SUM(debit) FROM bank WHERE description LIKE '%FUEL%' OR description LIKE '%OYOOS%';`); err != nil {
+		log.Println(err)
+	}
+	log.Println("Fuel ", fuel)
+	am.Gas = fuel
+}
+func (am *Amenities) Calcfood() {
+	var food float64
+	if err := db.Select(&food, `SELECT sum(debit) FROM bank WHERE description LIKE '%ROYAL%' OR description LIKE '%RETAIL%' OR description LIKE '%swiggy%' OR description LIKE '%PEEDIKA%';`); err != nil {
+		log.Println(err)
+	}
+	log.Println("Food ", food)
+	am.Food = food
+}
+
+func (a *AllData) CalcMonthlyMax() {
+	var mdist []Monthlydist
+	if err := db.Select(&mdist, `SELECT to_char(date,'YY-Month') AS year_month, SUM(debit) AS debsum, sum(credit) AS credsum FROM bank GROUP BY year_month ORDER BY year_month;`); err != nil {
+		log.Println("Monthly Data Aggregation Error::", err)
+	}
+	log.Println("Monthly Data \n", mdist)
+	a.MonthlyData = mdist
+}
+
+func (a *AllData) RetMonthsforAggr() []string {
+	var months []string
+	for _, mnths := range a.MonthlyData {
+		months = append(months, mnths.Date)
+	}
+	return months
+}
+
+func (a *AllData) RetSumsAggr(mode string) []float64 {
+	var trs []float64
+	switch mode {
+	case "deb":
+		for _, dt := range a.MonthlyData {
+			trs = append(trs, (dt.Mxdeb))
+		}
+	case "cred":
+		for _, dt := range a.MonthlyData {
+			trs = append(trs, dt.Mxcred.Float64)
+		}
+	}
+	return trs
+}

@@ -22,16 +22,18 @@
     <h3>Maximum Debited Amount from UPI: {{.UPIPoints.MxDebit | humanize | currit}}</h3>
     <h3>Maximum Credit Amount from UPI: {{.UPIPoints.MxCredit | humanize | currit}}</h3>
     <hr>
+    <div id="chart-2"></div>
+    <hr/>
     <h3>Sum of Transactions in UPI</h3>
     <h4>Total Debited Amount:{{.UPISum.DebSum| humanize | currit}}</h4>
     <h4>Total Credited Amount: {{.UPISum.CredSum| humanize | currit}}</h4>
     <hr/>
     <hr/>
     
-    <div id="chart"></div>
+    <div id="chart-1"></div>
 </body>
 <script>
-    const data = {
+    const data_1 = {
         labels:{{.GetDates}},
         datasets: [
             {
@@ -47,10 +49,35 @@
         ]
     }
     
-    const chart = new frappe.Chart("#chart", {  // or a DOM element,
+    const chart = new frappe.Chart("#chart-1", {  // or a DOM element,
                                                 // new Chart() in case of ES6 module with above usage
         title: "Basic Credit and Debit",
-        data: data,
+        data: data_1,
+        type: 'axis-mixed', // or 'bar', 'line', 'scatter', 'pie', 'percentage'
+        height: 250,
+        colors: ['#7cd6fd', '#743ee2']
+    })
+
+    const data_2 = {
+        labels:{{.RetMonthsforAggr}},
+        datasets: [
+            {
+                name: "Credit",
+                values: {{.RetSumsAggr "cred"}},
+                chartType: 'bar'
+            },
+            {
+                name: "Debit",
+                values: {{.RetSumsAggr "deb"}},
+                chartType: 'bar'
+            },
+        ]
+    }
+    
+    const chart_2 = new frappe.Chart("#chart-2", {  // or a DOM element,
+                                                // new Chart() in case of ES6 module with above usage
+        title: "Monthly Aggregate",
+        data: data_2,
         type: 'axis-mixed', // or 'bar', 'line', 'scatter', 'pie', 'percentage'
         height: 250,
         colors: ['#7cd6fd', '#743ee2']

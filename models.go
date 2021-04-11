@@ -30,8 +30,9 @@ type AllData struct {
 	CurBal    float64
 	BalonDate string
 	//UPIPoints hold the Max and Min of UPI transactions,debit and credit
-	UPIPoints MinMax
-	UPISum    Sums
+	UPIPoints   MinMax
+	UPISum      Sums
+	MonthlyData []Monthlydist
 }
 
 //MinMax holds the Max and Mins of Debits and Credits
@@ -46,4 +47,18 @@ type MinMax struct {
 type Sums struct {
 	DebSum  float64 `db:"debsum"`
 	CredSum float64 `db:"credsum"`
+}
+
+// Amenities hold all basic amenities where most cash is transacted
+type Amenities struct {
+	Food    float64
+	Gas     float64
+	Clothes float64
+	Online  float64
+}
+
+type Monthlydist struct {
+	Date   string          `db:"year_month"`
+	Mxdeb  float64         `db:"debsum"`
+	Mxcred sql.NullFloat64 `db:"credsum"`
 }
