@@ -21,10 +21,10 @@ func eros(err error) {
 func main() {
 	db = csv2pg.InitDB()
 	all := AllData{}
-	all.fetchAlltrs()
-	all.getMinMaxupi()
-	all.sumfromUPI()
-	all.CalcMonthlyMax()
+	// all.fetchAlltrs()
+	// all.getMinMaxupi()
+	// all.sumfromUPI()
+	// all.CalcMonthlyMax()
 	e := echo.New()
 	e.GET("/", all.renderIndexTemplate)
 	e.GET("/all", all.renderTableTemplate)
@@ -34,7 +34,6 @@ func main() {
 	e.POST("/search", all.renderSearch)
 	e.POST("/ins", all.newTransaction)
 	e.Start(":8080")
-
 }
 
 func (a *AllData) fetchAlltrs() {

@@ -11,7 +11,7 @@ import (
 
 func getUPI() []Transaction {
 	upiTrans := []Transaction{}
-	if err = db.Select(&upiTrans, `SELECT * FROM bank WHERE description LIKE '%-UPI%' ORDER BY id DESC`); err != nil {
+	if err = db.Select(&upiTrans, `SELECT * FROM bank WHERE description LIKE '%UPI%' ORDER BY id DESC`); err != nil {
 		log.Println("Unable to fetch UP Transactions", err)
 	}
 	return upiTrans
@@ -63,6 +63,7 @@ func (a *AllData) newTransaction(c echo.Context) error {
 	insStmt := `INSERT INTO bank VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`
 	res := db.MustExec(insStmt, len(a.AllTrans)+1, date, date, desc, ref, nildeb, nilcred, fmt.Sprintf("%.2f", newflt))
 	log.Println(res.RowsAffected())
+	// c.Echo().Start(":8080")
 	return c.String(200, "Date is "+date+"\n"+desc+"\n"+ref+"\n"+debit+"\n"+credit+"\n"+fmt.Sprintf("%.2f", newflt))
 }
 

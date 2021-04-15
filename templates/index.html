@@ -21,16 +21,15 @@
     <hr>
     <h3>Maximum Debited Amount from UPI: {{.UPIPoints.MxDebit | humanize | currit}}</h3>
     <h3>Maximum Credit Amount from UPI: {{.UPIPoints.MxCredit | humanize | currit}}</h3>
-    <hr>
-    <div id="chart-2"></div>
     <hr/>
     <h3>Sum of Transactions in UPI</h3>
     <h4>Total Debited Amount:{{.UPISum.DebSum| humanize | currit}}</h4>
     <h4>Total Credited Amount: {{.UPISum.CredSum| humanize | currit}}</h4>
     <hr/>
     <hr/>
-    
     <div id="chart-1"></div>
+    <hr>
+    <div id="chart-2"></div>
 </body>
 <script>
     const data_1 = {
@@ -55,6 +54,9 @@
         data: data_1,
         type: 'axis-mixed', // or 'bar', 'line', 'scatter', 'pie', 'percentage'
         height: 250,
+        lineOptions: {
+            hideDots: 1, // default: 0
+        },
         colors: ['#7cd6fd', '#743ee2']
     })
 
@@ -80,7 +82,10 @@
         data: data_2,
         type: 'axis-mixed', // or 'bar', 'line', 'scatter', 'pie', 'percentage'
         height: 250,
-        colors: ['#7cd6fd', '#743ee2']
+        barOptions: {
+         "stacked": 1,
+         },
+        colors: ['green', 'red']
     })
 </script>
 <style>

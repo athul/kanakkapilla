@@ -28,7 +28,10 @@ var funcMap = template.FuncMap{
 
 func (a *AllData) renderIndexTemplate(c echo.Context) error {
 	var b bytes.Buffer
-
+	a.fetchAlltrs()
+	a.getMinMaxupi()
+	a.sumfromUPI()
+	a.CalcMonthlyMax()
 	temp, err := template.New("index.html").Funcs(funcMap).ParseGlob("templates/index.html")
 	if err != nil {
 		log.Println(err)
