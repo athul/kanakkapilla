@@ -3,13 +3,13 @@ package main
 import (
 	"log"
 
-	"github.com/athul/kanakkapilla/csv2pg"
+	"github.com/athul/kanakkapilla/database"
 	"github.com/labstack/echo/v4"
 	_ "github.com/lib/pq"
 )
 
 var (
-	db  = csv2pg.DB
+	db  = database.DB
 	err error
 )
 
@@ -19,7 +19,7 @@ func eros(err error) {
 	}
 }
 func main() {
-	db = csv2pg.InitDB()
+	db = database.InitDB()
 	all := AllData{}
 	// all.fetchAlltrs()
 	// all.getMinMaxupi()

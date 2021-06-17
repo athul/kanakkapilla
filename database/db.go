@@ -1,4 +1,4 @@
-package csv2pg
+package database
 
 import (
 	"log"
