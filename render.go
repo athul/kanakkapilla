@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"html/template"
 	"log"
-	"strings"
 	"time"
 
 	"github.com/dustin/go-humanize"
@@ -26,11 +25,20 @@ var funcMap = template.FuncMap{
 	},
 }
 
+func (a *AllData) fetchAlltrs() {
+	trans := []Transaction{}
+	err = db.Select(&trans, `SELECT * FROM bank ORDER BY id DESC`)
+	eros(err)
+	a.AllTrans = trans
+	a.CurBal = trans[0].Balance
+	a.BalonDate = trans[0].Date
+}
+
 func (a *AllData) renderIndexTemplate(c echo.Context) error {
 	var b bytes.Buffer
 	a.fetchAlltrs()
-	a.getMinMaxupi()
-	a.sumfromUPI()
+	// a.getMinMaxupi()
+	// a.sumfromUPI()
 	a.CalcMonthlyMax()
 	temp, err := template.New("index.html").Funcs(funcMap).ParseGlob("templates/index.html")
 	if err != nil {
@@ -67,22 +75,4 @@ func (a *AllData) renderTableTemplate(c echo.Context) error {
 		log.Println(err)
 	}
 	return c.HTML(200, b.String())
-}
-func (a *AllData) renderSearch(e echo.Context) error {
-	descName := e.FormValue("query")
-	trs := []Transaction{}
-	var b bytes.Buffer
-	query := fmt.Sprintf(`SELECT * FROM bank WHERE description LIKE %s OR description LIKE %s ORDER BY date DESC`, "'%"+strings.ToUpper(descName)+"%'", "'%"+descName+"%'")
-	log.Println("Query", query)
-	err := db.Select(&trs, query)
-	if err != nil {
-		log.Println("Get Error", err)
-	}
-	log.Println(trs)
-	temp, err := template.New("search-table.html").Funcs(funcMap).ParseGlob("templates/search-table.html")
-	eros(err)
-	if err := temp.Execute(&b, trs); err != nil {
-		log.Println(err)
-	}
-	return e.HTML(200, b.String())
 }
