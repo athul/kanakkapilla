@@ -31,63 +31,6 @@
     <hr>
     <div id="chart-2"></div>
 </body>
-<script>
-    const data_1 = {
-        labels:{{.GetDates}},
-        datasets: [
-            {
-                name: "Credit",
-                values: {{.GetTrsArr "cred"}},
-                chartType: 'line'
-            },
-            {
-                name: "Debit",
-                values: {{.GetTrsArr "deb"}},
-                chartType: 'line'
-            },
-        ]
-    }
-    
-    const chart = new frappe.Chart("#chart-1", {  // or a DOM element,
-                                                // new Chart() in case of ES6 module with above usage
-        title: "Basic Credit and Debit",
-        data: data_1,
-        type: 'axis-mixed', // or 'bar', 'line', 'scatter', 'pie', 'percentage'
-        height: 250,
-        lineOptions: {
-            hideDots: 1, // default: 0
-        },
-        colors: ['#7cd6fd', '#743ee2']
-    })
-
-    const data_2 = {
-        labels:{{.RetMonthsforAggr}},
-        datasets: [
-            {
-                name: "Credit",
-                values: {{.RetSumsAggr "cred"}},
-                chartType: 'bar'
-            },
-            {
-                name: "Debit",
-                values: {{.RetSumsAggr "deb"}},
-                chartType: 'bar'
-            },
-        ]
-    }
-    
-    const chart_2 = new frappe.Chart("#chart-2", {  // or a DOM element,
-                                                // new Chart() in case of ES6 module with above usage
-        title: "Monthly Aggregate",
-        data: data_2,
-        type: 'axis-mixed', // or 'bar', 'line', 'scatter', 'pie', 'percentage'
-        height: 250,
-        barOptions: {
-         "stacked": 1,
-         },
-        colors: ['green', 'red']
-    })
-</script>
 <style>
     body{
         max-width:max-content !important;
