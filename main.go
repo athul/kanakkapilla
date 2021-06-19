@@ -1,8 +1,8 @@
 package main
 
 import (
+	"encoding/json"
 	"log"
-	"net/http"
 
 	"github.com/athul/kanakkapilla/database"
 	"github.com/labstack/echo/v4"
@@ -24,10 +24,11 @@ func main() {
 	all := AllData{}
 
 	e := echo.New()
-	e.GET("/", all.renderIndexTemplate)
-	e.GET("/all", all.renderTableTemplate)
-	e.GET("/upi", all.renderUPITemplate)
-	e.File("/new", "templates/insert.html")
+	e.GET("/", func(c echo.Context) error {
+		data, err := json.MarshalIndent(e.Routes(), "", "  ")
+		eros(err)
+		return c.JSON(200, string(data))
+	})
 	e.POST("/ins", all.newTransaction)
 	// API Group
 	api := e.Group("/api")
@@ -38,18 +39,4 @@ func main() {
 	api.GET("/amenities", AllAmenities)
 	api.GET("/all", allTransactions)
 	e.Start(":8080")
-}
-
-func allTransactions(c echo.Context) error {
-	toDate := c.QueryParam("toDate")
-	fromDate := c.QueryParam("fromDate")
-	trans := []Transaction{}
-	if toDate != "" && fromDate != "" {
-		err = db.Select(&trans, `SELECT * FROM bank WHERE date BETWEEN $1 AND $2 ORDER BY id DESC`, fromDate, toDate)
-		eros(err)
-	} else {
-		err = db.Select(&trans, `SELECT * FROM bank ORDER BY id DESC`)
-		eros(err)
-	}
-	return c.JSON(http.StatusOK, trans)
 }

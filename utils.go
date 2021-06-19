@@ -129,3 +129,17 @@ func AllAmenities(c echo.Context) error {
 	log.Println(a)
 	return c.JSON(200, a)
 }
+
+func allTransactions(c echo.Context) error {
+	toDate := c.QueryParam("toDate")
+	fromDate := c.QueryParam("fromDate")
+	trans := []Transaction{}
+	if toDate != "" && fromDate != "" {
+		err = db.Select(&trans, `SELECT * FROM bank WHERE date BETWEEN $1 AND $2 ORDER BY id DESC`, fromDate, toDate)
+		eros(err)
+	} else {
+		err = db.Select(&trans, `SELECT * FROM bank ORDER BY id DESC`)
+		eros(err)
+	}
+	return c.JSON(http.StatusOK, trans)
+}
