@@ -135,10 +135,10 @@ func allTransactions(c echo.Context) error {
 	fromDate := c.QueryParam("fromDate")
 	trans := []Transaction{}
 	if toDate != "" && fromDate != "" {
-		err = db.Select(&trans, `SELECT * FROM bank WHERE date BETWEEN $1 AND $2 ORDER BY id DESC`, fromDate, toDate)
+		err = db.Select(&trans, `SELECT * FROM bank WHERE date BETWEEN $1 AND $2`, fromDate, toDate)
 		eros(err)
 	} else {
-		err = db.Select(&trans, `SELECT * FROM bank ORDER BY id DESC`)
+		err = db.Select(&trans, `SELECT * FROM bank`)
 		eros(err)
 	}
 	return c.JSON(http.StatusOK, trans)

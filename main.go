@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"log"
 
 	"github.com/athul/kanakkapilla/database"
@@ -24,11 +23,8 @@ func main() {
 	all := AllData{}
 
 	e := echo.New()
-	e.GET("/", func(c echo.Context) error {
-		data, err := json.MarshalIndent(e.Routes(), "", "  ")
-		eros(err)
-		return c.JSON(200, string(data))
-	})
+	// e.GET("/",)
+	e.Static("/", "./bank/dist/")
 	e.POST("/ins", all.newTransaction)
 	// API Group
 	api := e.Group("/api")

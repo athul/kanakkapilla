@@ -9,5 +9,6 @@ require (
 	github.com/labstack/echo/v4 v4.2.2
 	github.com/lib/pq v1.10.0
 	github.com/stretchr/testify v1.6.0 // indirect
-	golang.org/x/tools v0.1.3 // indirect
+	golang.org/x/net v0.0.0-20210405180319-a5a99cb37ef4 // indirect
+	golang.org/x/sys v0.0.0-20210510120138-977fb7262007 // indirect
 )
