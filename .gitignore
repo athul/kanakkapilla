@@ -1,3 +1,4 @@
 bank.db
 tmp/
 *.csv
+.air.toml
