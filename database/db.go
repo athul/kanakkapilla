@@ -61,13 +61,16 @@ func InitDB() *sqlx.DB {
 	// 	log.Println("Table Creation Error", err)
 	// }
 	// log.Println(result.RowsAffected())
-	// transactions := handleCSV()
-	// csvtopostgres(transactions)
 	return DB
 }
 
-func handleCSV() []Transaction {
-	csvFile, err := os.Open("bank-str.csv")
+func InserttoDB(file string) {
+	transactions := handleCSV(file)
+	csvtopostgres(transactions)
+}
+
+func handleCSV(file string) []Transaction {
+	csvFile, err := os.Open(file)
 	if err != nil {
 		log.Println(err)
 	}

@@ -1,10 +1,11 @@
 package main
 
 import (
+	"flag"
 	"log"
 
 	"github.com/athul/kanakkapilla/database"
-	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo"
 	_ "github.com/lib/pq"
 )
 
@@ -19,12 +20,17 @@ func eros(err error) {
 	}
 }
 func main() {
+	filePath := flag.String("f", "", "The Path to CSV File")
+	flag.Parse()
+	if *filePath != "" {
+		database.InserttoDB(*filePath)
+	}
 	db = database.InitDB()
 	all := AllData{}
 
 	e := echo.New()
 	// e.GET("/",)
-	e.Static("/", "./bank/dist/")
+	// e.Static("/", "./bank/dist/")
 	e.POST("/ins", all.newTransaction)
 	// API Group
 	api := e.Group("/api")
