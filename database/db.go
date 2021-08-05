@@ -45,13 +45,13 @@ func InitDB() *sqlx.DB {
 	return DB
 }
 
-func csvtopostgres(file string) {
+func InserttoDB(file string) {
 	file_data, err := os.ReadFile(file)
 	if err != nil {
 		log.Println("JSON Reading Error", err)
 	}
 	ins := `INSERT INTO bank SELECT * FROM json_populate_recordset(NULL::bank,$1);`
-	ls, err := db.Exec(ins, string(file_data))
+	ls, err := DB.Exec(ins, string(file_data))
 	if err != nil {
 		log.Println("Error Inserting to table", err)
 	}
