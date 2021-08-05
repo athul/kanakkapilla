@@ -4,7 +4,6 @@ import (
 	"log"
 	"os"
 
-	"github.com/gocarina/gocsv"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq" //postgres driver
 )
@@ -24,18 +23,6 @@ var (
 // | 2  | 8 Feb 2020 | 8 Feb 2020 | TO TRANSFER TO SOMEONE ELSE | TRANSFER TO 123456789 |        | 100.00 | 6337.15 |
 // +----+------------+------------+-----------------------------+-----------------------+--------+--------+---------+
 
-// Transaction holds the structure of the csv and db
-type Transaction struct {
-	ID          int    `db:"id" csv:"id"`
-	Tdate       string `db:"tdate" csv:"tdate"`
-	Date        string `db:"date" csv:"date"`
-	Description string `db:"description" csv:"desc"`
-	Refno       string `db:"ref" csv:"ref"`
-	Debit       string `db:"debit" csv:"debit"`
-	Credit      string `db:"credit" csv:"credit"`
-	Balance     string `db:"bal" csv:"bal"`
-}
-
 //InitDB initializes the DB
 func InitDB() *sqlx.DB {
 	// var tableSchema = `DROP TABLE bank;CREATE TABLE IF NOT EXISTS bank(
@@ -48,7 +35,6 @@ func InitDB() *sqlx.DB {
 	// credit NUMERIC DEFAULT NULL,
 	// bal NUMERIC
 	// );`
-	// var pgURL = "postgres://athul:splendor@localhost?ssl=false"
 	DB, err = sqlx.Connect("postgres", "user=athul password=splendor sslmode=disable") //os.Getenv("pgurl"))
 	if err != nil {
 		log.Println(err)
@@ -56,50 +42,18 @@ func InitDB() *sqlx.DB {
 	if err = DB.Ping(); err != nil {
 		log.Println("Ping Error", err)
 	}
-	// result, err := DB.Exec(tableSchema)
-	// if err != nil {
-	// 	log.Println("Table Creation Error", err)
-	// }
-	// log.Println(result.RowsAffected())
 	return DB
 }
 
-func InserttoDB(file string) {
-	transactions := handleCSV(file)
-	csvtopostgres(transactions)
-}
-
-func handleCSV(file string) []Transaction {
-	csvFile, err := os.Open(file)
+func csvtopostgres(file string) {
+	file_data, err := os.ReadFile(file)
 	if err != nil {
-		log.Println(err)
+		log.Println("JSON Reading Error", err)
 	}
-	defer csvFile.Close()
-	trans := []Transaction{}
-	if err := gocsv.UnmarshalFile(csvFile, &trans); err != nil {
-		log.Println("CSV Unmarshal Error", err)
+	ins := `INSERT INTO bank SELECT * FROM json_populate_recordset(NULL::bank,$1);`
+	ls, err := db.Exec(ins, string(file_data))
+	if err != nil {
+		log.Println("Error Inserting to table", err)
 	}
-	return trans
-}
-
-func csvtopostgres(trs []Transaction) {
-	var cred, deb interface{}
-	insQuery := `INSERT INTO bank VALUES ($1, $2, $3, $4, $5, $6, $7, $8);`
-	for _, t := range trs {
-		if len(t.Credit) == 0 {
-			cred = nil
-		} else {
-			cred = t.Credit
-		}
-		if len(t.Debit) == 0 {
-			deb = nil
-		} else {
-			deb = t.Debit
-		}
-		ls, err := DB.Exec(insQuery, t.ID, t.Tdate, t.Date, t.Description, t.Refno, deb, cred, t.Balance)
-		if err != nil {
-			log.Println("Execution error", err)
-		}
-		log.Println(ls.RowsAffected())
-	}
+	log.Println(ls.RowsAffected())
 }

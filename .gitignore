@@ -2,3 +2,4 @@ bank.db
 tmp/
 *.csv
 .air.toml
+*.json
