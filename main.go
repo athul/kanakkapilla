@@ -10,8 +10,9 @@ import (
 )
 
 var (
-	db  = database.DB
-	err error
+	db       = database.DB
+	err      error
+	filePath string
 )
 
 func eros(err error) {
@@ -20,10 +21,11 @@ func eros(err error) {
 	}
 }
 func main() {
-	filePath := flag.String("f", "", "The Path to CSV File")
+	flag.StringVar(&filePath, "f", "", "The Path to CSV File")
 	flag.Parse()
-	if *filePath != "" {
-		database.InserttoDB(*filePath)
+	if filePath != "" {
+		database.InserttoDB(filePath)
+		return
 	}
 	db = database.InitDB()
 	all := AllData{}

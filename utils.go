@@ -21,7 +21,12 @@ func getMinMaxupi(c echo.Context) error {
 	}
 	return c.JSON(http.StatusOK, peak)
 }
-
+func (a *AllData) getAlltrs() {
+	trs := []Transaction{}
+	err = db.Select(&trs, `SELECT * FROM bank;`)
+	eros(err)
+	a.AllTrans = trs
+}
 func (a *AllData) newTransaction(c echo.Context) error {
 	var (
 		nildeb, nilcred interface{}
@@ -57,6 +62,7 @@ func (a *AllData) newTransaction(c echo.Context) error {
 //GetTrsArr returns a slice of the debit/credit transactions
 func (a *AllData) GetTrsArr(c echo.Context) error {
 	lasttrs := []MonthTrs{}
+	a.getAlltrs()
 	for _, dt := range a.AllTrans {
 		t, err := time.Parse(time.RFC3339, dt.Date)
 		eros(err)
@@ -70,7 +76,7 @@ func (a *AllData) GetTrsArr(c echo.Context) error {
 		})
 	}
 	log.Println(lasttrs)
-	return c.JSON(200, lasttrs[:20])
+	return c.JSON(200, lasttrs[len(lasttrs)-20:])
 }
 
 // CalcMonthlyMax calculates the Sum of Debit and Credit per month
@@ -86,6 +92,7 @@ func (a *AllData) CalcMonthlyMax() {
 // RetSumsAggr returns Monthly Total Transactions as JSON
 func (a *AllData) RetSumsAggr(c echo.Context) error {
 	trs := []MonthTrs{}
+	a.CalcMonthlyMax()
 	for _, dt := range a.MonthlyData {
 		trs = append(trs, MonthTrs{
 			Date: strings.ReplaceAll(dt.Date, " ", ""),

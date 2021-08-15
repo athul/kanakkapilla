@@ -44,14 +44,18 @@ func InitDB() *sqlx.DB {
 	}
 	return DB
 }
-
-func InserttoDB(file string) {
+func readjson(file string) string {
 	file_data, err := os.ReadFile(file)
 	if err != nil {
 		log.Println("JSON Reading Error", err)
 	}
-	ins := `INSERT INTO bank SELECT * FROM json_populate_recordset(NULL::bank,$1);`
-	ls, err := DB.Exec(ins, string(file_data))
+	return string(file_data)
+}
+func InserttoDB(file string) {
+	db := InitDB()
+	json_file := readjson(file)
+	ins := `INSERT INTO bank SELECT * FROM json_populate_recordset(NULL::bankjs,$1);`
+	ls, err := db.Exec(ins, json_file)
 	if err != nil {
 		log.Println("Error Inserting to table", err)
 	}
