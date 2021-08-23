@@ -50,10 +50,10 @@ type Peak struct {
 
 // Amenities hold all basic amenities where most cash is transacted
 type Amenities struct {
-	Food    float64
-	Gas     float64
-	Clothes float64
-	Online  float64
+	Food float64
+	Gas  float64
+	ATM  float64
+	Card float64
 }
 
 // Monthlydist holds the Max of Debit and Credit from the DB

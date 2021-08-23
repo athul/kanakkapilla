@@ -115,27 +115,6 @@ func (a *AllData) Search(e echo.Context) error {
 	}
 	return e.JSON(200, trs)
 }
-func (am *Amenities) Calcfuel() {
-	var fuel []float64
-	if err := db.Select(&fuel, `SELECT SUM(debit) FROM bank WHERE description LIKE '%FUEL%' OR description LIKE '%OYOOS%';`); err != nil {
-		log.Println(err)
-	}
-	am.Gas = fuel[0]
-}
-func (am *Amenities) Calcfood() {
-	var food []float64
-	if err := db.Select(&food, `SELECT sum(debit) FROM bank WHERE description LIKE '%ROYAL%' OR description LIKE '%RETAIL%' OR description LIKE '%swiggy%' OR description LIKE '%PEEDIKA%';`); err != nil {
-		log.Println(err)
-	}
-	am.Food = food[0]
-}
-func AllAmenities(c echo.Context) error {
-	a := Amenities{}
-	a.Calcfood()
-	a.Calcfuel()
-	log.Println(a)
-	return c.JSON(200, a)
-}
 
 func allTransactions(c echo.Context) error {
 	toDate := c.QueryParam("toDate")
@@ -149,4 +128,42 @@ func allTransactions(c echo.Context) error {
 		eros(err)
 	}
 	return c.JSON(http.StatusOK, trans)
+}
+
+// Amenities
+// Calculate Fuel Costs
+func (am *Amenities) Calcfuel() {
+	var fuel []float64
+	if err := db.Select(&fuel, `SELECT SUM(debit) FROM bank WHERE description LIKE '%FUEL%' OR description LIKE '%OYOOS%';`); err != nil {
+		log.Println(err)
+	}
+	am.Gas = fuel[0]
+}
+
+// Calculate Food Costs
+func (am *Amenities) Calcfood() {
+	var food []float64
+	if err := db.Select(&food, `SELECT sum(debit) FROM bank WHERE description LIKE '%ROYAL%' OR description LIKE '%RETAIL%' OR description LIKE '%swiggy%' OR description LIKE '%PEEDIKA%';`); err != nil {
+		log.Println(err)
+	}
+	am.Food = food[0]
+}
+
+//Calculate ATM Transactions
+func (am *Amenities) CalcATM() {
+	var ATM []float64
+	if err := db.Select(&ATM, `SELECT SUM(debit) FROM bank WHERE description LIKE '%WDL-ATM%';`); err != nil {
+		log.Println(err)
+	}
+	am.ATM = ATM[0]
+}
+
+// AllAmenities return all the data about Amenities as JSON
+func AllAmenities(c echo.Context) error {
+	a := Amenities{}
+	a.Calcfood()
+	a.Calcfuel()
+	a.CalcATM()
+	log.Println(a)
+	return c.JSON(200, a)
 }
