@@ -15,6 +15,7 @@ var (
 	filePath string
 )
 
+// Error Handler :)
 func eros(err error) {
 	if err != nil {
 		log.Println(err)

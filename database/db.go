@@ -25,7 +25,8 @@ var (
 
 //InitDB initializes the DB
 func InitDB() *sqlx.DB {
-	// var tableSchema = `DROP TABLE bank;CREATE TABLE IF NOT EXISTS bank(
+	// DB Schema
+	//CREATE TABLE IF NOT EXISTS bank(
 	// id SERIAL PRIMARY KEY,
 	// tdate DATE,
 	// date DATE,
@@ -44,6 +45,8 @@ func InitDB() *sqlx.DB {
 	}
 	return DB
 }
+
+// readjson reads the transactions in JSON and parses it
 func readjson(file string) string {
 	file_data, err := os.ReadFile(file)
 	if err != nil {
@@ -51,8 +54,11 @@ func readjson(file string) string {
 	}
 	return string(file_data)
 }
+
+// InserttoDB reads the JSON file and inserts the data
+// to Postgres via `json_populate_recordset` function of postgres
 func InserttoDB(file string) {
-	db := InitDB()
+	db := InitDB() //Initialize DB for Inserting Data
 	json_file := readjson(file)
 	ins := `INSERT INTO bank SELECT * FROM json_populate_recordset(NULL::bankjs,$1);`
 	ls, err := db.Exec(ins, json_file)

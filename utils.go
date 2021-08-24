@@ -11,6 +11,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+// getMinMaxupi fetches the UPI transactions and returns in JSON
 func getMinMaxupi(c echo.Context) error {
 	peak := Peak{}
 	if err := db.Select(&peak.UPI, `SELECT MAX(credit) as credmax,MAX(debit) as debmax,MIN(credit) as credmin,MIN(debit) as debmin FROM bank WHERE description LIKE '%-UPI%'`); err != nil {
@@ -21,12 +22,16 @@ func getMinMaxupi(c echo.Context) error {
 	}
 	return c.JSON(http.StatusOK, peak)
 }
+
+// getAlltrs returns the DB data as JSON
 func (a *AllData) getAlltrs() {
 	trs := []Transaction{}
 	err = db.Select(&trs, `SELECT * FROM bank;`)
 	eros(err)
 	a.AllTrans = trs
 }
+
+// newTransaction makes a new entry to the DB with the Formdata
 func (a *AllData) newTransaction(c echo.Context) error {
 	var (
 		nildeb, nilcred interface{}
@@ -104,6 +109,8 @@ func (a *AllData) RetSumsAggr(c echo.Context) error {
 	}
 	return c.JSON(200, trs)
 }
+
+// Search runs a search on the description column with the specified keyword
 func (a *AllData) Search(e echo.Context) error {
 	descName := e.QueryParam("query")
 	trs := []Transaction{}
@@ -116,6 +123,8 @@ func (a *AllData) Search(e echo.Context) error {
 	return e.JSON(200, trs)
 }
 
+// allTransactions returns the transactions within a time period if given
+// else returns all the data in the DB
 func allTransactions(c echo.Context) error {
 	toDate := c.QueryParam("toDate")
 	fromDate := c.QueryParam("fromDate")
