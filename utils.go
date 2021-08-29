@@ -26,7 +26,7 @@ func getMinMaxupi(c echo.Context) error {
 // getAlltrs returns the DB data as JSON
 func (a *AllData) getAlltrs() {
 	trs := []Transaction{}
-	err = db.Select(&trs, `SELECT * FROM bank;`)
+	err = db.Select(&trs, `SELECT * FROM bank ORDER BY id asc;`)
 	eros(err)
 	a.AllTrans = trs
 }
@@ -130,10 +130,10 @@ func allTransactions(c echo.Context) error {
 	fromDate := c.QueryParam("fromDate")
 	trans := []Transaction{}
 	if toDate != "" && fromDate != "" {
-		err = db.Select(&trans, `SELECT * FROM bank WHERE date BETWEEN $1 AND $2`, fromDate, toDate)
+		err = db.Select(&trans, `SELECT * FROM bank WHERE date BETWEEN $1 AND $2;`, fromDate, toDate)
 		eros(err)
 	} else {
-		err = db.Select(&trans, `SELECT * FROM bank`)
+		err = db.Select(&trans, `SELECT * FROM bank ORDER BY id;`)
 		eros(err)
 	}
 	return c.JSON(http.StatusOK, trans)
@@ -143,7 +143,7 @@ func allTransactions(c echo.Context) error {
 // Calculate Fuel Costs
 func (am *Amenities) Calcfuel() {
 	var fuel []float64
-	if err := db.Select(&fuel, `SELECT SUM(debit) FROM bank WHERE description LIKE '%FUEL%' OR description LIKE '%OYOOS%';`); err != nil {
+	if err := db.Select(&fuel, `SELECT SUM(debit) FROM bank WHERE category LIKE '%fuel%';`); err != nil {
 		log.Println(err)
 	}
 	am.Gas = fuel[0]
@@ -152,7 +152,7 @@ func (am *Amenities) Calcfuel() {
 // Calculate Food Costs
 func (am *Amenities) Calcfood() {
 	var food []float64
-	if err := db.Select(&food, `SELECT sum(debit) FROM bank WHERE description LIKE '%ROYAL%' OR description LIKE '%RETAIL%' OR description LIKE '%swiggy%' OR description LIKE '%PEEDIKA%';`); err != nil {
+	if err := db.Select(&food, `SELECT sum(debit) FROM bank WHERE category LIKE 'food';`); err != nil {
 		log.Println(err)
 	}
 	am.Food = food[0]

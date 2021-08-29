@@ -18,7 +18,7 @@ type Transaction struct {
 	Debit       sql.NullFloat64 `db:"debit" json:"debit"`
 	Credit      sql.NullFloat64 `db:"credit" json:"credit"`
 	Balance     float64         `db:"bal" json:"bal"`
-	// Tags        string          `db:"tags"`
+	Category    sql.NullString  `db:"category" json:"category"`
 }
 
 // AllData saves all the Data from the CSV File.
